@@ -64,8 +64,8 @@ class DaytradeEnvironment(object):
 
         #print(window)
         out = window.reshape(self.window_size * len(self.features))
-        out[0] = out[8]
-        out = np.delete(out, [8])
+        #out[0] = out[8]
+        #out = np.delete(out, [8])
         out = np.insert(out, self.POSITION_INDEX, 0.0) 
         print(out)
         print('#########')
@@ -113,11 +113,9 @@ class DaytradeEnvironment(object):
 
         obs = self.get_obs()
 
-        self.current_close = obs[self.CLOSE_INDEX]
+        self.close = obs[self.CLOSE_INDEX]
 
         r = self.get_reward(action)
-
-        self.close = self.current_close
 
         obs = self.clear_state(obs)
 
@@ -137,12 +135,21 @@ class DaytradeEnvironment(object):
 
         r = 0
         if self.position != 0:
-            r = (self.current_close / self.close) - 1 if self.buyer else 1 - (self.current_close / self.close)
-            if action == 0:
-                self.position = 0
+            if self.position == -0.1:
+                r = 1 - (self.close / self.start_close)
+                if action == 2:
+                    self.position = 0
+            else:
+                r = (self.close / self.start_close) - 1
+                if action == 0:
+                    self.position = 0
         else:     
-            if action == 1:
-                self.position = 0.1 if self.buyer else -0.1
+            if action == 0:
+                self.position = -0.1
+                self.start_close = self.close
+            elif action == 2:
+                self.position = 0.1
+                self.start_close = self.close
         
         self.balance += r
         return r

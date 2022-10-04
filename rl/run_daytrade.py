@@ -14,13 +14,13 @@ if __name__ == '__main__':
     symbol = sys.argv[1]
     save_model = 5
     update_target = 1
-    window = 2
+    window = 1
     checkpoint = f'../checkpoint/{symbol}'
     
     print(f'System parameters - symbol [{symbol}] update_target [{update_target}] save_model [{save_model}] checkpoint [${checkpoint}]')
     env = DaytradeEnvironment(f'../data/{symbol}.csv', 
                             window_size=window,
-                            features=['MACD_MAIN','MACD_SIGNAL','AWESOME','STO_MAIN','STO_SIGNAL','PRICE'])
+                            features=['PRICE', 'MACD_MAIN','MACD_SIGNAL','AWESOME','STO_MAIN','STO_SIGNAL'])
     agent = DuelingDDQNAgent(
                     input_dims=env.get_observation_space(), 
                     n_actions=env.get_action_space(),
