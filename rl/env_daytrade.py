@@ -62,14 +62,14 @@ class DaytradeEnvironment(object):
     #
     def normalize_window(self, window):
 
-        #print(window)
         out = window.reshape(self.window_size * len(self.features))
-        #out[0] = out[8]
-        #out = np.delete(out, [8])
-        out = np.insert(out, self.POSITION_INDEX, 0.0) 
-        print(out)
+        writeable = np.copy(out)
+        writeable[0] = writeable[6]
+        writeable = np.delete(writeable, [6])
+        writeable = np.insert(writeable, self.POSITION_INDEX, 0.0) 
+        print(writeable)
         print('#########')
-        return out
+        return writeable
 
     #
     # Generate time windows sequence-to-sequence
@@ -99,6 +99,7 @@ class DaytradeEnvironment(object):
         self.balance = 0
         self.current_step = step
         self.steps = 1
+        self.trades = 0
         self.done = False
         obs = self.get_obs()
         if len(obs) > self.CLOSE_INDEX:
@@ -136,23 +137,25 @@ class DaytradeEnvironment(object):
         r = 0
         if self.position != 0:
             if self.position == -0.1:
-                r = 1 - (self.close / self.start_close)
                 if action == 2:
                     self.position = 0
+                    r = self.start_close - self.close
             else:
-                r = (self.close / self.start_close) - 1
                 if action == 0:
                     self.position = 0
+                    r = self.close - self.start_close
         else:     
             if action == 0:
                 self.position = -0.1
                 self.start_close = self.close
+                self.trades += 1
             elif action == 2:
                 self.position = 0.1
                 self.start_close = self.close
+                self.trades += 1
         
         self.balance += r
-        return r
+        return 0
 
     #
     # Space

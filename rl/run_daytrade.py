@@ -14,7 +14,7 @@ if __name__ == '__main__':
     symbol = sys.argv[1]
     save_model = 5
     update_target = 1
-    window = 1
+    window = 2
     checkpoint = f'../checkpoint/{symbol}'
     
     print(f'System parameters - symbol [{symbol}] update_target [{update_target}] save_model [{save_model}] checkpoint [${checkpoint}]')
@@ -55,6 +55,7 @@ if __name__ == '__main__':
             'eps', j,
             'reward %.6f' % env.balance,
             'steps', env.steps,  
+            'trades', env.trades,
             'epsilon %.2f' % agent.epsilon)    
         
         
