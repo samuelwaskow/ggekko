@@ -13,7 +13,7 @@ if __name__ == '__main__':
 
     symbol = sys.argv[1]
     save_model = 5
-    update_target = 1
+    update_target = 5
     window = 2
     checkpoint = f'../checkpoint/{symbol}'
     
@@ -30,10 +30,9 @@ if __name__ == '__main__':
     scores = []
 
     for j in range(40000001):
-        random_step = 0 
-        
+        start = np.random.randint(0, env.end_step - 1)
         done = False
-        observation = env.reset(random_step)
+        observation = env.reset(start)
         while not done:
             action = agent.choose_action(observation)
             observation_, reward, done = env.step(action)

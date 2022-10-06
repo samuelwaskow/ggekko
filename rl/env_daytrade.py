@@ -120,10 +120,7 @@ class DaytradeEnvironment(object):
 
         obs = self.clear_state(obs)
 
-        if self.end():
-            self.done = True
-            r = self.balance
-        else:  
+        if not self.end() and self.done == False:
             self.current_step += 1
             self.steps += 1
         
@@ -138,24 +135,44 @@ class DaytradeEnvironment(object):
         if self.position != 0:
             if self.position == -0.1:
                 if action == 2:
-                    self.position = 0
                     r = self.start_close - self.close
+                    if r > 100:
+                        r = 1
+                        print('Closed sell max')
+                    elif r <= 0:
+                        r = -1
+                        print('Closed sell bad')
+                    else:
+                        r = 0.1
+                        print('Closed sell')
+                    self.done = True
             else:
                 if action == 0:
-                    self.position = 0
                     r = self.close - self.start_close
+                    if r > 100:
+                        r = 1
+                        print('Closed buy max')
+                    elif r <= 0:
+                        r = -1
+                        print('Closed buy bad')
+                    else:
+                        r = 0.1
+                        print('Closed buy')
+                    self.done = True
         else:     
             if action == 0:
                 self.position = -0.1
                 self.start_close = self.close
                 self.trades += 1
+                print('Opened sell')
             elif action == 2:
                 self.position = 0.1
                 self.start_close = self.close
                 self.trades += 1
+                print('Opened buy')
         
         self.balance += r
-        return 0
+        return r
 
     #
     # Space
