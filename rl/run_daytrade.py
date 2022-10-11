@@ -12,8 +12,8 @@ tf.keras.backend.set_floatx('float64')
 if __name__ == '__main__':
 
     symbol = sys.argv[1]
-    save_model = 5
-    update_target = 5
+    save_model = 10
+    update_target = 10
     window = 2
     checkpoint = f'../checkpoint/{symbol}'
     
@@ -26,8 +26,11 @@ if __name__ == '__main__':
                     n_actions=env.get_action_space(),
                     fname=checkpoint)
     
-    #agent.load_model()
+    agent.load_model()
     scores = []
+    for i in range(env.end_step):
+        scores.append([])
+    start = 0
 
     for j in range(40000001):
         start = np.random.randint(0, env.end_step - 1)
@@ -41,20 +44,20 @@ if __name__ == '__main__':
             agent.learn()
             
         agent.update_epsilon()       
-        scores.append(env.balance)
+        scores[start].append(env.balance)
 
         if j > 1 and j % update_target == 0:
             agent.align_networks()
         if j > 1 and j % save_model == 0:
             agent.save_model()
-            filename = f'daytrader_{symbol}.png'
-            plot_daytrade(scores, filename)
+            filename = f'daytrader_{symbol}_{start}.png'
+            plot_daytrade(scores[start], filename)
     
         print(
             'eps', j,
             'reward %.6f' % env.balance,
             'steps', env.steps,  
-            'trades', env.trades,
+            'start', start,
             'epsilon %.2f' % agent.epsilon)    
         
         

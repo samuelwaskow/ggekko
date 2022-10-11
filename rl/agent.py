@@ -21,7 +21,7 @@ class DuelingDDQNAgent(object):
                 gamma=0.99, 
                 batch_size=32, 
                 epsilon=1, 
-                epsilon_dec=0.99, 
+                epsilon_dec=0.9999, 
                 epsilon_end=0.1, 
                 mem_size=1000000, 
                 fc1_dims=256,
